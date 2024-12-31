@@ -11,13 +11,13 @@ namespace WebApi.Controllers
     public class RepositoryController : ControllerBase
     {
 
-        private readonly RepositoryBL _repositoryBL;
+        private readonly IRepositoryBL _repositoryBL;
 
         private readonly ILogger<RepositoryController> _logger;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
 
-        public RepositoryController(RepositoryBL repositoryBL,ILogger<RepositoryController> logger, UserService userService)
+        public RepositoryController(IRepositoryBL repositoryBL,ILogger<RepositoryController> logger, IUserService userService)
         {
             _userService = userService;
             _repositoryBL = repositoryBL;
@@ -34,7 +34,7 @@ namespace WebApi.Controllers
                 response = _userService.Authenticate(request);
 
                 if (response == null)
-                    return BadRequest(new { message = "Username or password is incorrect" });//return 400
+                    return BadRequest(new { message = "Username or Password is incorrect" });//return 400
             }
             catch (Exception ex)
             {
@@ -48,8 +48,9 @@ namespace WebApi.Controllers
         //SAMPLE http://localhost:5000/api/externaldata/1 int
         //SAMPLE http://localhost:5000/api/externaldata/JohnDoe, string 
         //[HttpGet(Name = "GetRepository")]
-        //[HttpGet("{searchParam}")]
-        [HttpGet("{searchParam}", Name = "GetRepository")]
+        //orig code tbc [Authorize]
+        [HttpGet("{searchParam}")]
+        //[HttpGet("{searchParam}", Name = "getrepository")]
         public async Task<IActionResult> GetRepository(string searchParam) //IENURABLE ?  IEnumerable<RepositoryResponse>
         //public async Task<IActionResult> GetRepository([FromQuery] string searchParam) //IENURABLE ?  IEnumerable<RepositoryResponse>
         {
@@ -58,11 +59,6 @@ namespace WebApi.Controllers
 
                 try
                 {
-                //        // URL of the external JSON service
-                //        var url = "https://api.example.com/data";
-
-                //        // Sending a GET request to the external API
-                //        var response = await _httpClient.GetAsync(url);
 
                   response = await _repositoryBL.GetRepository(searchParam);
 

@@ -17,17 +17,11 @@ namespace WebApi
        private readonly RequestDelegate _next;
        private readonly AppSettings _appSettings;
 
-      //?my
-      //private readonly IUserService _userService;
-
-
         public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
        {
           _next = next;
           _appSettings = appSettings.Value;
 
-          //?
-          //_userService = userService;
        }
 
        public async Task Invoke(HttpContext context, IUserService userService) 
