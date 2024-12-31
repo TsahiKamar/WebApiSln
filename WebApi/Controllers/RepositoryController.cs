@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using WebApi.BL;
+using WebApi.Models;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
@@ -11,16 +14,36 @@ namespace WebApi.Controllers
         private readonly RepositoryBL _repositoryBL;
 
         private readonly ILogger<RepositoryController> _logger;
-      
+        private readonly UserService _userService;
 
-        public RepositoryController(RepositoryBL repositoryBL,ILogger<RepositoryController> logger)
+
+        public RepositoryController(RepositoryBL repositoryBL,ILogger<RepositoryController> logger, UserService userService)
         {
+            _userService = userService;
             _repositoryBL = repositoryBL;
             _logger = logger;
 
         }
 
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate(AuthenticateRequest request)
+        {
+            AuthenticateResponse response = null;
+            try
+            {
+                response = _userService.Authenticate(request);
 
+                if (response == null)
+                    return BadRequest(new { message = "Username or password is incorrect" });//return 400
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+
+                //EventLog.WriteEntry("Authenticate error : ", ex.ToString(), EventLogEntryType.Error);
+            }
+            return Ok(response);
+        }
 
         //SAMPLE http://localhost:5000/api/externaldata/1 int
         //SAMPLE http://localhost:5000/api/externaldata/JohnDoe, string 

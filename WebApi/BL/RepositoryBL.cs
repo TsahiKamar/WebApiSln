@@ -8,13 +8,13 @@ namespace WebApi.BL
 {
     public class RepositoryBL: IRepositoryBL
     {
-        private readonly JwtService _jwtService;
-        private readonly RepositoryService _repositoryService;
-        private readonly UserService _userService;
+        private readonly IJwtService _jwtService;
+        private readonly IRepositoryService _repositoryService;
+        private readonly IUserService _userService;
 
         //Id = 1, FirstName = "Test", LastName = "User",
 
-        public RepositoryBL(JwtService jwtService,RepositoryService repositoryService, UserService userService)
+        public RepositoryBL(IJwtService jwtService,IRepositoryService repositoryService, IUserService userService)
         {
             _jwtService = jwtService;
             _repositoryService = repositoryService;
@@ -23,19 +23,19 @@ namespace WebApi.BL
         }
 
         #region Public Methods
- 
-        public AuthenticateResponse Authenticate(AuthenticateRequest model)
-        {
-            var user = _userService.GetAll().SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
+        //moved to userService
+        //public AuthenticateResponse Authenticate(AuthenticateRequest model)
+        //{
+        //    var user = _userService.GetAll().SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
 
-            // return null if user not found
-            if (user == null) return null;
+        //    // return null if user not found
+        //    if (user == null) return null;
 
-            // authentication successful so generate jwt token
-            var token = this._jwtService.generateJwtToken(user);
+        //    // authentication successful so generate jwt token
+        //    var token = this._jwtService.generateJwtToken(user);
 
-            return new AuthenticateResponse(user, token);
-        }
+        //    return new AuthenticateResponse(user, token);
+        //}
 
         public User? GetById(int id)
         {

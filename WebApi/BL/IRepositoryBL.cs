@@ -7,7 +7,7 @@ namespace WebApi.BL
     {
 
         Task<HttpResponseMessage> GetRepository(string searchParam);
-        AuthenticateResponse Authenticate(AuthenticateRequest model);
+        //AuthenticateResponse Authenticate(AuthenticateRequest model);
         User GetById(int id);
 
     }

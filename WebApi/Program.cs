@@ -11,11 +11,13 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 
 builder.Services.AddControllers();
 
-builder.Services.AddSingleton<IUserService, UserService>();
+
+builder.Services.AddScoped<IRepositoryBL, RepositoryBL>();
+
+//builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IJwtService, JwtService>();//?
-
-//builder.Services.AddScoped<IRepositoryBL, RepositoryBL>();
 
 
 builder.Services.AddScoped<IRepositoryService, RepositoryService>();
