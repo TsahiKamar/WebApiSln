@@ -16,7 +16,7 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IRepositoryBL, RepositoryBL>();
-builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IUserService, UserService>();//
 builder.Services.AddSingleton<IJwtService, JwtService>();
 
 builder.Services.AddScoped<IRepositoryService, RepositoryService>();
