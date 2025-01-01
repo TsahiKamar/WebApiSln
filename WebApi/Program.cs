@@ -13,8 +13,6 @@ builder.Services.AddHttpClient();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
-// Add services to the container.
-
 builder.Services.AddControllers();
 
 
@@ -23,8 +21,7 @@ builder.Services.AddScoped<IRepositoryBL, RepositoryBL>();
 //builder.Services.AddSingleton<IUserService, UserService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-builder.Services.AddSingleton<IJwtService, JwtService>();//?
-
+builder.Services.AddSingleton<IJwtService, JwtService>();
 
 builder.Services.AddScoped<IRepositoryService, RepositoryService>();
 
@@ -32,23 +29,7 @@ builder.Services.AddScoped<IRepositoryService, RepositoryService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//https://maherz.medium.com/how-to-generate-self-signed-certificates-and-configure-net-core-api-bf4b676c9979
-//MUST INSTALL BEFORE USE
-//?
-//SELF-SIGNED SSL 
-//builder.Services.AddHttpsRedirection(options =>
-//{
-//    options.HttpsPort = 5001;
-    //options.ClientCertificateMode = ClientCertificateMode.AllowCertificate;//?
-    //options.ServerCertificate = new X509Certificate2("mycert.crt");//?
-//});
-
-
-
 var app = builder.Build();
-
-//app.UseHttpsRedirection();//FOR USE SELF-SIGNED SSL 
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -57,13 +38,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();//?for middleware
-
 app.MapControllers();
-
-//MY
 app.UseRouting();
-
 
 //Global Cors Policy
 app.UseCors(x => x
@@ -71,9 +47,9 @@ app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader());
 
-//JWT auth middleware
-//TBC app.UseMiddleware<JwtMiddleware>();
-app.UseEndpoints(x => x.MapControllers());
+//JWT Auth middleware
+app.UseMiddleware<JwtMiddleware>();
 
+app.UseEndpoints(x => x.MapControllers());
 
 app.Run();

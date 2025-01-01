@@ -4,8 +4,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApi.Models;
-using WebApi.Services;
-
 
 namespace WebApi.Services
 {
@@ -29,12 +27,6 @@ namespace WebApi.Services
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                //SUBJECT CAN BE CUSTOM FOR EXAMPLE
-                //{
-                //"sub": "1234567890", //The USER
-                //"name": "John Doe",
-                //"admin": true
-                //}
                 Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
 
                 Expires = DateTime.UtcNow.AddDays(7),

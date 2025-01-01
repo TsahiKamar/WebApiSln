@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Web.Http;
 using WebApi.BL;
 using WebApi.Models;
 using WebApi.Services;
@@ -7,7 +8,7 @@ using WebApi.Services;
 namespace WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
     public class RepositoryController : ControllerBase
     {
 
@@ -24,8 +25,8 @@ namespace WebApi.Controllers
             _logger = logger;
 
         }
-
-        [HttpPost("authenticate")]
+        //INIT JWT TOKEN AFTER VERIFY USERNAME & PASSWORD 
+        [Microsoft.AspNetCore.Mvc.HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateRequest request)
         {
             AuthenticateResponse response = null;
@@ -39,85 +40,37 @@ namespace WebApi.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-
-                //EventLog.WriteEntry("Authenticate error : ", ex.ToString(), EventLogEntryType.Error);
             }
             return Ok(response);
         }
 
-        //SAMPLE http://localhost:5000/api/externaldata/1 int
-        //SAMPLE http://localhost:5000/api/externaldata/JohnDoe, string 
-        //[HttpGet(Name = "GetRepository")]
-        //orig code tbc [Authorize]
-        [HttpGet("{searchParam}")]
-        //[HttpGet("{searchParam}", Name = "getrepository")]
-        public async Task<IActionResult> GetRepository(string searchParam) //IENURABLE ?  IEnumerable<RepositoryResponse>
-        //public async Task<IActionResult> GetRepository([FromQuery] string searchParam) //IENURABLE ?  IEnumerable<RepositoryResponse>
+        [Authorize]
+        //[Microsoft.AspNetCore.Mvc.HttpGet("{searchParam}")]
+        [Microsoft.AspNetCore.Mvc.HttpGet("GetRepositories")]
+        public async Task<IActionResult> GetRepositories([FromUri] string searchParam)
         {
 
-            HttpResponseMessage response;
+            IActionResult response;
+            try
+            {
 
-                try
+                  response = await _repositoryBL.GetRepositories(searchParam);
+
+                if ( ((IStatusCodeActionResult)response).StatusCode != 200)
                 {
-
-                  response = await _repositoryBL.GetRepository(searchParam);
-
-                  if (!response.IsSuccessStatusCode)
-                  {
-                     return StatusCode((int)response.StatusCode, "Error calling external service");
-                  }
-
-            //        // Reading the response content as a string
-            //        var jsonResponse = await response.Content.ReadAsStringAsync();
-
-            //        // Deserialize the JSON response into a C# object (e.g., ExternalData)
-            //        var data = JsonConvert.DeserializeObject<ExternalData>(jsonResponse);
-
-                    // Return the data
-                    //return Ok(data);
+                   var statusCode = ((IStatusCodeActionResult)response).StatusCode ?? -1;
+                   _logger.LogError($"Error invoke GetRepository service ! statusCode: {statusCode}", searchParam);
+                   return StatusCode(statusCode, "Error invoke GetRepository service");
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.Message, searchParam);//?
+            }
+            catch (Exception ex)
+            {
+                    _logger.LogError(ex.Message, searchParam);
                     return StatusCode(500, $"Internal server error: {ex.Message}");
-                }
-                
-                return Ok(response);
+            }
+      
+            return Ok(response);
 
         }
     }
 }
-
-
-//[HttpGet]
-//public async Task<IActionResult> GetExternalData()
-//{
-//    try
-//    {
-//        // URL of the external JSON service
-//        var url = "https://api.example.com/data";
-
-//        // Sending a GET request to the external API
-//        var response = await _httpClient.GetAsync(url);
-
-//        if (!response.IsSuccessStatusCode)
-//        {
-//            return StatusCode((int)response.StatusCode, "Error calling external service");
-//        }
-
-//        // Reading the response content as a string
-//        var jsonResponse = await response.Content.ReadAsStringAsync();
-
-//        // Deserialize the JSON response into a C# object (e.g., ExternalData)
-//        var data = JsonConvert.DeserializeObject<ExternalData>(jsonResponse);
-
-//        // Return the data
-//        return Ok(data);
-//    }
-//    catch (Exception ex)
-//    {
-//        return StatusCode(500, $"Internal server error: {ex.Message}");
-//    }
-//}
-//    }
-//}
