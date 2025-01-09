@@ -1,9 +1,13 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Win32;
 using System.Security.Cryptography.X509Certificates;
 using WebApi;
 using WebApi.BL;
+using WebApi.Models; //Use also for Validator
 using WebApi.Services;
+
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,9 @@ builder.Services.AddSingleton<IUserService, UserService>();//
 builder.Services.AddSingleton<IJwtService, JwtService>();
 
 builder.Services.AddScoped<IRepositoryService, RepositoryService>();
+
+
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();//FluentValidation
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

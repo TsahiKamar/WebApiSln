@@ -1,5 +1,7 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System;
 using System.Web.Http;
 using WebApi.BL;
 using WebApi.Models;
@@ -17,12 +19,15 @@ namespace WebApi.Controllers
         private readonly ILogger<RepositoryController> _logger;
         private readonly IUserService _userService;
 
+        private readonly IValidator<AuthenticateRequest> _authenticateRequestValidator;
 
-        public RepositoryController(IRepositoryBL repositoryBL,ILogger<RepositoryController> logger, IUserService userService)
+
+        public RepositoryController(IRepositoryBL repositoryBL,ILogger<RepositoryController> logger, IUserService userService, IValidator<AuthenticateRequest> authenticateRequestValidator)
         {
             _userService = userService;
             _repositoryBL = repositoryBL;
             _logger = logger;
+            _authenticateRequestValidator = authenticateRequestValidator;
 
         }
         //INIT JWT TOKEN AFTER VERIFY USERNAME & PASSWORD 
@@ -32,6 +37,14 @@ namespace WebApi.Controllers
             AuthenticateResponse response = null;
             try
             {
+
+                
+                var validationResult = _authenticateRequestValidator.Validate(request);
+                if (!validationResult.IsValid)
+                {
+                    return BadRequest(validationResult.Errors);
+                }
+
                 response = _userService.Authenticate(request);
 
                 if (response == null)
